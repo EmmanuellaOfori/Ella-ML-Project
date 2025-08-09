@@ -1,0 +1,16 @@
+{
+  "testuser": {
+    "password_hash": "scrypt:32768:8:1$PpNQdSZWsYGqD8Q6$411207608a391a96a4b15dd5875ec8dd6f23b49293ee17357f89fd96d037f72d46d4bc99f58253bd169fadd3eca0e2d0b4cd009c3c520f9f4568133a5bfc1222",
+    "email": "test@example.com",
+    "created_at": "2025-08-08T21:05:36.364322",
+    "last_login": null,
+    "is_active": true
+  },
+  "admin": {
+    "password_hash": "scrypt:32768:8:1$0IDkFxHeCnT2Vl7b$ac8e2c46cc8c316e891f58c86a7e4f3455e0759d6ba91c283af3ff60fdc8be383273de98b1db6750f83ed11f2a20f916daf1bb6d4c7aa77518df31001d857d72",
+    "email": "admin@ella.com",
+    "created_at": "2025-08-08T21:49:26.774224",
+    "last_login": null,
+    "is_active": true
+  }
+}

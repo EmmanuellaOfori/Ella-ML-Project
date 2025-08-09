@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Next Month Product Forecast - Ella ML Project (Nuella Edition)</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh;
+        }
+        .header { 
+            background: rgba(255,255,255,0.95); 
+            color: #333; 
+            padding: 30px; 
+            margin: -20px -20px 30px -20px; 
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .nav { 
+            margin: 20px 0; 
+            text-align: center;
+        }
+        .nav a { 
+            margin: 5px; 
+            padding: 12px 20px; 
+            background: rgba(255,255,255,0.9); 
+            color: #333; 
+            text-decoration: none; 
+            border-radius: 25px; 
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .nav a:hover { background: white; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .nav a.active { background: #667eea; color: white; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .main-card { 
+            background: rgba(255,255,255,0.95); 
+            padding: 40px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .forecast-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .forecast-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        .result-container {
+            margin-top: 30px;
+            display: none;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .product-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: left;
+            border-left: 5px solid #667eea;
+        }
+        .product-card.very-high {
+            border-left-color: #28a745;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.05), rgba(32, 201, 151, 0.05));
+        }
+        .product-card.high {
+            border-left-color: #17a2b8;
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.05), rgba(32, 201, 151, 0.05));
+        }
+        .product-card.medium {
+            border-left-color: #ffc107;
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.05), rgba(253, 126, 20, 0.05));
+        }
+        .product-card.low {
+            border-left-color: #6c757d;
+            background: linear-gradient(135deg, rgba(108, 117, 125, 0.05), rgba(173, 181, 189, 0.05));
+        }
+        .product-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .likelihood-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .likelihood-very-high { background: #28a745; }
+        .likelihood-high { background: #17a2b8; }
+        .likelihood-medium { background: #ffc107; color: #333; }
+        .likelihood-low { background: #6c757d; }
+        .metrics-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .metric-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .metric-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .metric-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .summary-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            display: none;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .algorithm-info {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔮 Next Month Product Forecast</h1>
+        <p>AI-powered prediction of products most likely to be sold based on comprehensive analysis</p>
+        <small>Analyzes 2,000 orders • Purchase patterns • Customer behavior • Seasonal trends</small>
+    </div>
+    
+    <div class="nav">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/products">Products</a>
+        <a href="/orders">Orders</a>
+        <a href="/customers">Customers</a>
+        <a href="/profitability">Profit Prediction</a>
+        <a href="/forecast" class="active">Product Forecast</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div class="container">
+        <div class="main-card">
+            <h2>🎯 Forecast Next Month's Top Products</h2>
+            <p>Click the button below to analyze historical purchase patterns and predict which products are most likely to be sold in the next month.</p>
+            
+            <button id="forecastButton" class="forecast-button" onclick="forecastProducts()">
+                🔮 Forecast Products
+            </button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing purchase patterns and customer behavior...</p>
+            </div>
+            
+            <div class="alert alert-error" id="errorAlert"></div>
+            
+            <div class="result-container" id="resultContainer">
+                <div class="summary-card" id="summaryCard">
+                    <h3>📊 Forecast Summary</h3>
+                    <div class="summary-stats" id="summaryStats">
+                        <!-- Summary stats will be populated here -->
+                    </div>
+                </div>
+                
+                <h3>🎯 Product Forecast Results</h3>
+                <div class="product-grid" id="productGrid">
+                    <!-- Product cards will be populated here -->
+                </div>
+                
+                <div class="algorithm-info">
+                    <h4>🔬 Analysis Methodology</h4>
+                    <p><strong>Algorithm:</strong> Product Frequency Analysis with Recency Weighting</p>
+                    <p><strong>Data Source:</strong> Nuella_train.csv (2,000 comprehensive orders)</p>
+                    <p><strong>Factors Considered:</strong> Historical sales volume, order frequency, recency of purchases, seasonal patterns, customer behavior</p>
+                    <p><strong>Categories Analyzed:</strong> Perfume Oils (by bottle size), Body Splashes, Boxed Perfumes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function forecastProducts() {
+            const button = document.getElementById('forecastButton');
+            const loading = document.getElementById('loading');
+            const resultContainer = document.getElementById('resultContainer');
+            const errorAlert = document.getElementById('errorAlert');
+            
+            // Show loading state
+            button.disabled = true;
+            button.textContent = 'Analyzing...';
+            loading.style.display = 'block';
+            resultContainer.style.display = 'none';
+            errorAlert.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/forecast-products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayForecastResults(data.data);
+                } else {
+                    showError(data.error || 'Failed to generate forecast');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                // Reset button state
+                button.disabled = false;
+                button.textContent = '🔮 Forecast Products';
+                loading.style.display = 'none';
+            }
+        }
+        
+        function displayForecastResults(data) {
+            const resultContainer = document.getElementById('resultContainer');
+            const summaryStats = document.getElementById('summaryStats');
+            const productGrid = document.getElementById('productGrid');
+            
+            // Display summary statistics
+            const summary = data.forecast_summary;
+            summaryStats.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${summary.total_products_analyzed}</div>
+                    <div class="stat-label">Products Analyzed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${summary.high_likelihood_products}</div>
+                    <div class="stat-label">Very High Likelihood</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${summary.medium_likelihood_products}</div>
+                    <div class="stat-label">High Likelihood</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${summary.total_orders_analyzed}</div>
+                    <div class="stat-label">Orders Analyzed</div>
+                </div>
+            `;
+            
+            // Display product forecasts
+            const products = data.top_products_forecast;
+            productGrid.innerHTML = products.map(product => {
+                const likelihoodClass = product.forecast_likelihood.toLowerCase().replace(' ', '-');
+                
+                return `
+                    <div class="product-card ${likelihoodClass}">
+                        <div class="product-name">${product.product_category}: ${product.product_detail}</div>
+                        <div class="likelihood-badge likelihood-${likelihoodClass}">
+                            ${product.forecast_likelihood} (${product.demand_score.toFixed(1)})
+                        </div>
+                        
+                        <div class="metrics-row">
+                            <div class="metric-item">
+                                <div class="metric-value">${product.total_quantity_sold}</div>
+                                <div class="metric-label">Total Sold</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">${product.order_frequency}</div>
+                                <div class="metric-label">Order Frequency</div>
+                            </div>
+                        </div>
+                        
+                        <div class="metrics-row">
+                            <div class="metric-item">
+                                <div class="metric-value">$${product.avg_unit_price}</div>
+                                <div class="metric-label">Avg Unit Price</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">${product.avg_quantity_per_order}</div>
+                                <div class="metric-label">Avg Qty/Order</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 5px; font-size: 0.9em;">
+                            <strong>Last Order:</strong> ${product.last_order_date}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Show results
+            resultContainer.style.display = 'block';
+            
+            // Scroll to results
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showError(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            errorAlert.textContent = message;
+            errorAlert.style.display = 'block';
+        }
+        
+        // Auto-forecast on page load for demo
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                forecastProducts();
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
+        <a href="/customers">Customers</a>
+        <a href="/reports">Reports</a>
+        <a href="/profitability">Profitability</a>
+        <a href="/forecast" class="active">Forecast</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div class="container">
+        <!-- Forecast Controls -->
+        <div class="card">
+            <h3>🎯 30-Day Purchase Prediction</h3>
+            <div class="grid">
+                <div>
+                    <p>Analyze which products are most likely to be purchased in the next 30 days based on historical data, current trends, and ML model insights.</p>
+                    <button onclick="loadProductForecast()" class="btn btn-success">
+                        🎯 Analyze Purchase Likelihood
+                    </button>
+                    <button onclick="refreshForecast()" class="btn">
+                        🔄 Refresh Analysis
+                    </button>
+                </div>
+                <div>
+                    <h4>Advanced Analysis</h4>
+                    <button onclick="loadPurchasePredictions()" class="btn" style="background: #e74c3c;">
+                        � Refresh Predictions
+                    </button>
+                    <p style="font-size: 0.9em; color: #6c757d; margin-top: 10px;">
+                        Get insights on which products are gaining or losing momentum to predict future purchases.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forecast Summary -->
+        <div id="forecastSummary" style="display: none;">
+            <div class="forecast-summary">
+                <h3>� 30-Day Purchase Prediction Summary</h3>
+                <div class="grid-3" id="summaryCards">
+                    <!-- Summary will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Performance -->
+        <div id="categoryPerformance" style="display: none;">
+            <div class="card">
+                <h3>📋 Category Performance Analysis</h3>
+                <div id="categoryGrid" class="grid">
+                    <!-- Category data will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Forecast Results -->
+        <div id="forecastResults">
+            <div class="loading">
+                <h3>🎯 Ready to Predict</h3>
+                <p>Click "Analyze Purchase Likelihood" to see which products are most likely to be purchased in the next 30 days.</p>
+            </div>
+        </div>
+
+        <!-- Trending Results -->
+        <div id="trendingResults" style="display: none;">
+            <div class="card">
+                <h3>📈 Product Trending Analysis</h3>
+                <div id="trendingContent">
+                    <!-- Trending content will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadProductForecast() {
+            const resultsDiv = document.getElementById('forecastResults');
+            const summaryDiv = document.getElementById('forecastSummary');
+            const categoryDiv = document.getElementById('categoryPerformance');
+            
+            resultsDiv.innerHTML = '<div class="loading"><h3>🎯 Analyzing Purchase Likelihood...</h3><p>Processing sales data and ML predictions for next 30 days...</p></div>';
+            summaryDiv.style.display = 'none';
+            categoryDiv.style.display = 'none';
+            
+            fetch('/api/product-forecast')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayProductForecast(data.forecast);
+                    } else {
+                        resultsDiv.innerHTML = '<div class="error">❌ Prediction failed: ' + data.error + '</div>';
+                    }
+                })
+                .catch(error => {
+                    resultsDiv.innerHTML = '<div class="error">❌ Error loading predictions</div>';
+                    console.error('Error:', error);
+                });
+        }
+
+        function displayProductForecast(forecast) {
+            const resultsDiv = document.getElementById('forecastResults');
+            const summaryDiv = document.getElementById('forecastSummary');
+            const categoryDiv = document.getElementById('categoryPerformance');
+            
+            // Summary
+            if (forecast.summary) {
+                const summaryCards = document.getElementById('summaryCards');
+                summaryCards.innerHTML = `
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius:5px; text-align:center;">
+                        <h4 style="margin:0; color:#fff;">${forecast.summary.total_products_analyzed}</h4>
+                        <small>Products Analyzed</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius:5px; text-align:center;">
+                        <h4 style="margin:0; color:#90ee90;">${forecast.summary.high_demand_products}</h4>
+                        <small>High Likelihood</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius:5px; text-align:center;">
+                        <h4 style="margin:0; color:#ffd700;">${forecast.summary.medium_demand_products}</h4>
+                        <small>Medium Likelihood</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius:5px; text-align:center;">
+                        <h4 style="margin:0; color:#ff6b6b;">${forecast.summary.low_demand_products}</h4>
+                        <small>Low Likelihood</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius:5px; text-align:center;">
+                        <h4 style="margin:0; color:#87ceeb;">${forecast.summary.total_predicted_30day_sales}</h4>
+                        <small>Predicted 30d Units</small>
+                    </div>`;
+                summaryDiv.style.display='block';
+            }
+
+            // Categories
+            if (forecast.categories) {
+                const categoryGrid = document.getElementById('categoryGrid');
+                let html='';
+                Object.entries(forecast.categories).forEach(([cat,data])=>{
+                    html += `
+                    <div class="category-card">
+                        <h4>${cat}</h4>
+                        <div>Products: ${data.total_products}</div>
+                        <div>Avg Likelihood: ${data.avg_likelihood}%</div>
+                        <div>High Likelihood: ${data.high_likelihood_count}</div>
+                        <div>Predicted 30d Sales: ${data.total_predicted_sales}</div>
+                        <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100, data.avg_likelihood)}%"></div></div>
+                    </div>`;
+                });
+                categoryGrid.innerHTML = html;
+                categoryDiv.style.display='block';
+            }
+
+            // Products
+            if (forecast.products && forecast.products.length) {
+                let html = '<div class="card"><h3>🎯 Top 30-Day Purchase Likelihood</h3>';
+                forecast.products.forEach((p,i)=>{
+                    html += `
+                    <div class="product-card" style="background:#f8f9fa;">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
+                            <div style="flex:1; min-width:240px;">
+                                <h4 style="margin:0 0 5px 0;">#${i+1} ${p.product_name}</h4>
+                                <small>Type: ${p.product_type} | Stock: ${p.current_stock} | Price: $${p.unit_price}</small>
+                            </div>
+                            <div style="text-align:center; min-width:120px;">
+                                <div style="font-size:1.6em; font-weight:bold;">${p.likelihood_percent}%</div>
+                                <small>${p.likelihood} Likelihood</small>
+                            </div>
+                            <div style="text-align:right; min-width:180px;">
+                                <div>Sold Total: ${p.total_sold}</div>
+                                <div>Recent 30d: ${p.recent_sales}</div>
+                                <div>Predicted 30d: ${p.predicted_30day_sales}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:8px; font-size:0.9em;"><strong>Action:</strong> ${p.recommended_action}</div>
+                    </div>`;
+                });
+                html += '</div>';
+                resultsDiv.innerHTML = html;
+            } else {
+                resultsDiv.innerHTML = '<div class="error">No prediction data available.</div>';
+            }
+        }
+
+        function refreshForecast() {
+            document.getElementById('forecastResults').innerHTML = '<div class="loading"><h3>🎯 Ready to Predict</h3><p>Click "Analyze Purchase Likelihood" to see updated predictions for the next 30 days.</p></div>';
+            document.getElementById('forecastSummary').style.display = 'none';
+            document.getElementById('categoryPerformance').style.display = 'none';
+            document.getElementById('trendingResults').style.display = 'none';
+        }
+
+        function loadPurchasePredictions() {
+            const resultsDiv = document.getElementById('trendingResults');
+            const contentDiv = document.getElementById('trendingContent');
+            
+            resultsDiv.style.display = 'block';
+            contentDiv.innerHTML = '<div class="loading">🎯 Analyzing 30-day purchase predictions...</div>';
+            
+            fetch('/api/purchase-forecast', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayPurchasePredictions(data.forecast);
+                    } else {
+                        contentDiv.innerHTML = '<div class="error">❌ Purchase prediction failed: ' + data.error + '</div>';
+                    }
+                })
+                .catch(error => {
+                    contentDiv.innerHTML = '<div class="error">❌ Error loading purchase predictions</div>';
+                    console.error('Error:', error);
+                });
+        }
+
+        function displayTrendingAnalysis(trends) {
+            const contentDiv = document.getElementById('trendingContent');
+            
+            if (trends.error) {
+                contentDiv.innerHTML = '<div class="error">❌ ' + trends.error + '</div>';
+                return;
+            }
+
+            let trendingHTML = '';
+
+            // Summary section
+            if (trends.summary) {
+                trendingHTML += `
+                    <div class="forecast-summary" style="margin-bottom: 20px;">
+                        <h4>📊 Trending Summary</h4>
+                        <div class="grid-3">
+                            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 5px; text-align: center;">
+                                <h4 style="margin: 0; color: #90ee90;">${trends.summary.rising_count}</h4>
+                                <small>Rising Products</small>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 5px; text-align: center;">
+                                <h4 style="margin: 0; color: #ffd700;">${trends.summary.stable_count}</h4>
+                                <small>Stable Products</small>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 5px; text-align: center;">
+                                <h4 style="margin: 0; color: #ff6b6b;">${trends.summary.declining_count}</h4>
+                                <small>Declining Products</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Rising products section
+            if (trends.rising_products && trends.rising_products.length > 0) {
+                trendingHTML += `
+                    <div class="card" style="border-left: 4px solid #28a745; margin: 15px 0;">
+                        <h4 style="color: #28a745;">🚀 Rising Stars - Products on the Rise</h4>
+                `;
+                
+                trends.rising_products.forEach(product => {
+                    trendingHTML += `
+                        <div class="product-card likelihood-high" style="margin: 10px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h5 style="margin: 0;">${product.product_name}</h5>
+                                    <div style="font-size: 0.9em; opacity: 0.9;">${product.trend}</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div class="metric">${product.trend_score}%</div>
+                                    <div style="font-size: 0.9em;">Trend Score</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div>Recent: ${product.recent_sales} units</div>
+                                    <div>Avg: ${product.avg_monthly_sales}/month</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                trendingHTML += '</div>';
+            }
+
+            // Declining products section
+            if (trends.declining_products && trends.declining_products.length > 0) {
+                trendingHTML += `
+                    <div class="card" style="border-left: 4px solid #dc3545; margin: 15px 0;">
+                        <h4 style="color: #dc3545;">⚠️ Attention Needed - Declining Products</h4>
+                `;
+                
+                trends.declining_products.forEach(product => {
+                    trendingHTML += `
+                        <div class="product-card likelihood-low" style="margin: 10px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h5 style="margin: 0;">${product.product_name}</h5>
+                                    <div style="font-size: 0.9em; opacity: 0.9;">${product.trend}</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div class="metric">${product.trend_score}%</div>
+                                    <div style="font-size: 0.9em;">Trend Score</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div>Recent: ${product.recent_sales} units</div>
+                                    <div>Avg: ${product.avg_monthly_sales}/month</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                trendingHTML += '</div>';
+            }
+
+            // All trends table
+            if (trends.all_trends && trends.all_trends.length > 0) {
+                trendingHTML += `
+                    <div class="card">
+                        <h4>📋 Complete Trending Analysis</h4>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    <th style="padding: 10px; text-align: left;">Product</th>
+                                    <th style="padding: 10px; text-align: center;">Trend</th>
+                                    <th style="padding: 10px; text-align: center;">Score</th>
+                                    <th style="padding: 10px; text-align: center;">Recent Sales</th>
+                                    <th style="padding: 10px; text-align: center;">Monthly Avg</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                trends.all_trends.forEach((product, index) => {
+                    const trendColor = product.trend.includes('Rising') ? '#28a745' : 
+                                     product.trend.includes('Declining') ? '#dc3545' : '#ffc107';
+                    
+                    trendingHTML += `
+                        <tr style="border-bottom: 1px solid #dee2e6;">
+                            <td style="padding: 10px;">${product.product_name}</td>
+                            <td style="padding: 10px; text-align: center; color: ${trendColor}; font-weight: bold;">${product.trend}</td>
+                            <td style="padding: 10px; text-align: center;">${product.trend_score}%</td>
+                            <td style="padding: 10px; text-align: center;">${product.recent_sales}</td>
+                            <td style="padding: 10px; text-align: center;">${product.avg_monthly_sales}</td>
+                        </tr>
+                    `;
+                });
+
+                trendingHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            contentDiv.innerHTML = trendingHTML;
+        }
+    </script>
+</body>
+</html>

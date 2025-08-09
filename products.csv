@@ -1,0 +1,54 @@
+product id,name,brand,size,unit price,type,quantity
+PO-001,Love Spell,Victoria Secret,500,1000,Perfume Oil,60
+PO-002,Coconut Passion,Victoria Secret,100,270,Perfume Oil,23
+PO-003,Sugar Baby,Fume,200,500,Perfume Oil,45
+PO-004,Be Delicious,DKNY,300,800,Perfume Oil,7
+PO-005,J'adore,Dior,100,270,Perfume Oil,9
+PO-006,Black Opium,YSL,50,170,Perfume Oil,15
+PO-007,Libre,YSL,200,500,Perfume Oil,17
+PO-008,Sunset Heat,Escada,300,800,Perfume Oil,12
+PO-009,Aventus,Creed,1000,2000,Perfume Oil,89
+PO-010,Tuscan Leather,Tom Ford,1000,2000,Perfume Oil,43
+PO-011,Oud Wood,Tom Ford,400,900,Perfume Oil,5
+PO-012,Liquid Brun,Fragrance World,200,500,Perfume Oil,6
+PO-013,Asad,Lataffa,100,270,Perfume Oil,34
+PO-014,Yara Pink,Lataffa,50,170,Perfume Oil,29
+PO-015,Ramz Silver,Lataffa,100,270,Perfume Oil,38
+PO-016,Red Tobacco,Mancera,50,170,Perfume Oil,25
+PO-017,Eros Man,Versace,20,90,Perfume Oil,28
+PO-018,Sauvage,Dior,500,1000,Perfume Oil,98
+PO-019,Bad Boy,Carolina,300,800,Perfume Oil,21
+PO-020,Good Girl,Carolina,50,270,Perfume Oil,56
+PO-021,Code Black,Armani,300,800,Perfume Oil,30
+PO-022,Silver Mountain,Creed,20,90,Perfume Oil,29
+PO-023,Scandal,JPG,300,800,Perfume Oil,28
+PO-024,Interlude,Amouge,100,270,Perfume Oil,56
+PO-025,Oud Intense,Gucci,100,270,Perfume Oil,87
+PO-026,Miss Dior,Dior,50,170,Perfume Oil,109
+PO-027,Candy,Prada,50,170,Perfume Oil,32
+PO-028,My Way,Armani,30,120,Perfume Oil,64
+PO-029,Club De Nuit,Armaf,50,170,Perfume Oil,8
+PO-030,Olympea,Paco Rabanne,200,500,Perfume Oil,11
+BM-001,Vanilla Crush,Lasgidi,100,35,Body Mist,22
+BM-002,Monogotas,Hannah's Secret,100,35,Body Mist,32
+BM-003,Pure Seduction,Victoria Secret,250,100,Body Mist,43
+BM-004,Love Spell,Victoria Secret,250,100,Body Mist,55
+BM-005,Coconut Passion,Victoria Secret,250,100,Body Mist,43
+BM-006,Betres,Hannah's Secret,100,35,Body Mist,47
+BM-007,My Crush,Pendora's Scents,250,120,Body Mist,11
+BM-008,Sweet Berries,Pendora's Scents,250,120,Body Mist,26
+BM-009,Love Spell,Pendora's Scents,250,120,Body Mist,76
+BM-010,Floral Rush,Airbody,250,80,Body Mist,8
+BM-011,She is Pink,Airbody,250,80,Body Mist,1
+BM-012,Bloom Garden,Airbody,250,80,Body Mist,50
+BM-013,Crush on You,Pink in Sweet,250,40,Body Mist,19
+BM-014,Sweet Rainbow Candy ,Pink in Sweet,250,40,Body Mist,67
+BM-015,Rio Radiance,Sol de Janeiro,90,100,Body Mist,3
+BM-016,Cheirosa 59,Brazilian Crush,90,100,Body Mist,67
+BM-017,Cheirosa 68,Brazilian Crush,90,100,Body Mist,53
+BP-001,Summer Pink,Summer Scent,30,55,Boxed Perfume,75
+BP-002,Yara Pink,Summer Scent,30,55,Boxed Perfume,62
+BP-003,Hayaati Black,Hayaati,30,70,Boxed Perfume,34
+BP-004,Hayaati Rose,Hayaati,30,70,Boxed Perfume,35
+BP-005,Khamrah,Lataffa,50,150,Boxed Perfume,45
+BP-006,Bombshell,Victoria Secret,30,55,Boxed Perfume,65

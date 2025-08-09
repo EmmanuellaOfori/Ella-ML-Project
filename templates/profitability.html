@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>30-Day Profit Prediction - Ella ML Project (Nuella Edition)</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh;
+        }
+        .header { 
+            background: rgba(255,255,255,0.95); 
+            color: #333; 
+            padding: 30px; 
+            margin: -20px -20px 30px -20px; 
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .nav { 
+            margin: 20px 0; 
+            text-align: center;
+        }
+        .nav a { 
+            margin: 5px; 
+            padding: 12px 20px; 
+            background: rgba(255,255,255,0.9); 
+            color: #333; 
+            text-decoration: none; 
+            border-radius: 25px; 
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .nav a:hover { background: white; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .nav a.active { background: #28a745; color: white; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .main-card { 
+            background: rgba(255,255,255,0.95); 
+            padding: 40px; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .prediction-button {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        .prediction-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        }
+        .prediction-button:active {
+            transform: translateY(-1px);
+        }
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        .profit-display {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #28a745;
+            margin: 20px 0;
+        }
+        .confidence-score {
+            background: linear-gradient(135deg, #17a2b8, #20c997);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 10px;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .metric-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #28a745;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            display: none;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .algorithm-info {
+            background: rgba(23, 162, 184, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 30-Day Profit Prediction</h1>
+        <p>Advanced AI-powered profit forecasting using comprehensive Nuella dataset</p>
+        <small>Based on 2,000 historical orders • Time series analysis • Seasonal adjustments</small>
+    </div>
+    
+    <div class="nav">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/products">Products</a>
+        <a href="/orders">Orders</a>
+        <a href="/customers">Customers</a>
+        <a href="/profitability" class="active">Profit Prediction</a>
+        <a href="/forecast">Product Forecast</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div class="container">
+        <div class="main-card">
+            <h2>🚀 Predict Your Next 30 Days Profit</h2>
+            <p>Click the button below to generate an AI-powered prediction of your expected profit for the next 30 days based on historical sales patterns, trends, and seasonal factors.</p>
+            
+            <button id="predictButton" class="prediction-button" onclick="predict30DayProfit()">
+                📈 Predict 30-Day Profit
+            </button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing historical data and trends...</p>
+            </div>
+            
+            <div class="alert alert-error" id="errorAlert"></div>
+            
+            <div class="result-container" id="resultContainer">
+                <h3>🎯 Profit Prediction Results</h3>
+                
+                <div class="profit-display" id="profitAmount">$0.00</div>
+                <div class="confidence-score" id="confidenceScore">Confidence: 0%</div>
+                
+                <div class="metrics-grid" id="metricsGrid">
+                    <!-- Metrics will be populated here -->
+                </div>
+                
+                <div class="algorithm-info">
+                    <h4>📊 Analysis Details</h4>
+                    <p id="algorithmDetails">Algorithm: Time Series Trend Analysis with Seasonal Adjustment</p>
+                    <p id="dataSource">Data Source: Nuella_train.csv (2,000 orders)</p>
+                    <p id="analysisPeriod">Analysis Period: Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function predict30DayProfit() {
+            const button = document.getElementById('predictButton');
+            const loading = document.getElementById('loading');
+            const resultContainer = document.getElementById('resultContainer');
+            const errorAlert = document.getElementById('errorAlert');
+            
+            // Show loading state
+            button.disabled = true;
+            button.textContent = 'Analyzing...';
+            loading.style.display = 'block';
+            resultContainer.style.display = 'none';
+            errorAlert.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/predict-30day-profit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayPredictionResults(data.data);
+                } else {
+                    showError(data.error || 'Failed to generate prediction');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                // Reset button state
+                button.disabled = false;
+                button.textContent = '📈 Predict 30-Day Profit';
+                loading.style.display = 'none';
+            }
+        }
+        
+        function displayPredictionResults(data) {
+            const resultContainer = document.getElementById('resultContainer');
+            const profitAmount = document.getElementById('profitAmount');
+            const confidenceScore = document.getElementById('confidenceScore');
+            const metricsGrid = document.getElementById('metricsGrid');
+            const analysisPeriod = document.getElementById('analysisPeriod');
+            
+            // Display main profit prediction
+            profitAmount.textContent = `$${data.predicted_30day_profit.toLocaleString()}`;
+            confidenceScore.textContent = `Confidence: ${data.confidence_score}%`;
+            
+            // Display key metrics
+            const metrics = [
+                { label: 'Daily Average', value: `$${data.key_metrics.avg_daily_profit}`, icon: '📊' },
+                { label: 'Trend Direction', value: data.key_metrics.trend_direction, icon: data.key_metrics.trend_direction === 'increasing' ? '📈' : '📉' },
+                { label: 'Growth Velocity', value: `${data.key_metrics.velocity_percent}%`, icon: '🚀' },
+                { label: 'Seasonal Factor', value: `${((data.key_metrics.seasonal_factor - 1) * 100).toFixed(1)}%`, icon: '🌟' },
+                { label: 'Avg Order Value', value: `$${data.key_metrics.avg_order_value}`, icon: '💰' },
+                { label: 'Recent Orders', value: data.key_metrics.recent_order_count, icon: '📦' }
+            ];
+            
+            metricsGrid.innerHTML = metrics.map(metric => `
+                <div class="metric-card">
+                    <div class="metric-value">${metric.icon} ${metric.value}</div>
+                    <div class="metric-label">${metric.label}</div>
+                </div>
+            `).join('');
+            
+            // Update analysis details
+            analysisPeriod.textContent = `Analysis Period: ${data.analysis_period}`;
+            
+            // Show results
+            resultContainer.style.display = 'block';
+            
+            // Scroll to results
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showError(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            errorAlert.textContent = message;
+            errorAlert.style.display = 'block';
+        }
+        
+        // Auto-predict on page load for demo
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                predict30DayProfit();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Live Business Metrics Dashboard -->
+        <div class="card" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; margin-bottom: 20px;">
+            <h3 style="color: white;">🚀 Live Business Intelligence</h3>
+            <div id="liveMetricsContainer">
+                <div style="text-align: center; padding: 20px;">
+                    <button onclick="loadLiveMetrics()" class="btn" style="background: white; color: #1e3c72;">
+                        📊 Load Current Business Metrics
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ML Price Prediction Tool -->
+        <div class="card" style="border-left: 4px solid #28a745;">
+            <h3>🤖 AI Price Prediction Tool</h3>
+            <div class="grid">
+                <div>
+                    <h4>Predict Optimal Price for New Order</h4>
+                    <div class="form-group">
+                        <label>Product Type:</label>
+                        <select id="productType" required>
+                            <option value="">Select Type</option>
+                            <option value="perfume">Perfume</option>
+                            <option value="cologne">Cologne</option>
+                            <option value="body_spray">Body Spray</option>
+                            <option value="gift_set">Gift Set</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity:</label>
+                        <input type="number" id="quantity" min="1" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Customer Segment:</label>
+                        <select id="customerSegment" required>
+                            <option value="">Select Segment</option>
+                            <option value="premium">Premium</option>
+                            <option value="regular">Regular</option>
+                            <option value="budget">Budget</option>
+                        </select>
+                    </div>
+                    <button type="button" onclick="predictPrice()" class="btn">
+                        🎯 Predict Optimal Price
+                    </button>
+                </div>
+                <div>
+                    <h4>Prediction Results</h4>
+                    <div id="priceResults" style="background: #f8f9fa; padding: 20px; border-radius: 5px; text-align: center;">
+                        <p style="color: #6c757d;">Enter order details to get AI-powered price prediction</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Prediction Form -->
+            <div class="card">
+                <h2>📊 Calculate Required Orders</h2>
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="target_profit">Target Monthly Profit ($):</label>
+                        <input type="number" id="target_profit" name="target_profit" 
+                               value="{{ request.form.target_profit or '50000' }}" 
+                               min="0" step="1000" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fixed_costs">Monthly Fixed Costs ($):</label>
+                        <input type="number" id="fixed_costs" name="fixed_costs" 
+                               value="{{ request.form.fixed_costs or '5000' }}" 
+                               min="0" step="500">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="growth_factor">Performance Factor:</label>
+                        <select id="growth_factor" name="growth_factor">
+                            <option value="0.8" {% if request.form.growth_factor == '0.8' %}selected{% endif %}>80% - Conservative</option>
+                            <option value="1.0" {% if request.form.growth_factor == '1.0' or not request.form.growth_factor %}selected{% endif %}>100% - Current Performance</option>
+                            <option value="1.2" {% if request.form.growth_factor == '1.2' %}selected{% endif %}>120% - Improved Efficiency</option>
+                            <option value="1.5" {% if request.form.growth_factor == '1.5' %}selected{% endif %}>150% - Optimized Operations</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn">Calculate Orders Needed</button>
+                    <button type="button" class="btn btn-info" onclick="showQuickScenarios()">Quick Scenarios</button>
+                </form>
+            </div>
+
+            <!-- Model Information -->
+            <div class="card">
+                <h2>🤖 Model Information</h2>
+                {% if model_summary %}
+                <div class="model-info">
+                    <p><strong>Model Accuracy:</strong> {{ (model_summary.model_accuracy * 100) if model_summary.model_accuracy is defined else 'N/A' }}%</p>
+                    <p><strong>Training Data:</strong> {{ model_summary.data_size if model_summary.data_size is defined else 'N/A' }} orders</p>
+                    <p><strong>Current Profit Margin:</strong> {{ model_summary.profit_margin if model_summary.profit_margin is defined else 'N/A' }}%</p>
+                    <p><strong>Avg Profit per Order:</strong> ${{ '%.2f' % model_summary.avg_profit_per_order if model_summary.avg_profit_per_order is defined else 'N/A' }}</p>
+                </div>
+                {% endif %}
+
+                <div class="highlight">
+                    <strong>💡 How it works:</strong><br>
+                    This model analyzes your historical order data to predict how many orders you need to achieve specific profit targets. It considers your average profit per order, fixed costs, and performance improvements.
+                </div>
+            </div>
+        </div>
+
+        <!-- Prediction Results -->
+        {% if prediction %}
+        <div class="prediction-result">
+            <h2>📈 Prediction Results</h2>
+            <div class="grid">
+                <div>
+                    <h3>Orders Required</h3>
+                    <div class="metric">{{ prediction.orders_needed_monthly }} orders/month</div>
+                    <div class="metric">{{ prediction.orders_needed_daily }} orders/day</div>
+                </div>
+                <div>
+                    <h3>Financial Projections</h3>
+                    <p><strong>Target Profit:</strong> ${{ '%.0f' % prediction.target_profit if prediction.target_profit is defined else 'N/A' }}</p>
+                    <p><strong>Fixed Costs:</strong> ${{ '%.0f' % prediction.fixed_costs if prediction.fixed_costs is defined else 'N/A' }}</p>
+                    <p><strong>Total Revenue Needed:</strong> ${{ '%.0f' % prediction.estimated_revenue if prediction.estimated_revenue is defined else 'N/A' }}</p>
+                    <p><strong>Break-even Orders:</strong> {{ prediction.break_even_point }} orders/month</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Pre-calculated Scenarios -->
+        {% if scenarios %}
+        <div class="card">
+            <h2>🎯 Quick Reference Scenarios</h2>
+            <div class="grid">
+                {% for target, scenario in scenarios.items() %}
+                <div class="scenario-card">
+                    <h4>${{ target }} Monthly Profit Target</h4>
+                    <p><strong>Revenue required:</strong> ${{ '%.0f' % scenario.estimated_revenue if scenario.estimated_revenue is defined else 'N/A' }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Business Insights -->
+        <div class="card">
+            <h2>💼 Business Insights</h2>
+            <div class="alert alert-info">
+                <h4>Key Recommendations:</h4>
+                <ul>
+                    <li><strong>Focus on Wholesale Orders:</strong> They typically generate higher profits per order</li>
+                    <li><strong>Optimize Operations:</strong> Even small efficiency gains can significantly reduce required order volume</li>
+                    <li><strong>Monitor Fixed Costs:</strong> Lower fixed costs directly reduce break-even requirements</li>
+                    <li><strong>Track Performance:</strong> Regular analysis helps maintain profitability targets</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showQuickScenarios() {
+            alert("Quick Profit Scenarios:\n\n" +
+                  "Conservative Growth: $25,000\n" +
+                  "  → 3 orders/month\n\n" +
+                  "Moderate Expansion: $50,000\n" +
+                  "  → 6 orders/month\n\n" +
+                  "Aggressive Growth: $75,000\n" +
+                  "  → 8 orders/month\n\n" +
+                  "Scale-up Target: $100,000\n" +
+                  "  → 11 orders/month");
+        }
+        
+        // Live ML Functions
+        function loadLiveMetrics() {
+            const container = document.getElementById('liveMetricsContainer');
+            container.innerHTML = '<div style="text-align:center; padding:20px;">⏳ Loading live business metrics...</div>';
+            fetch('/api/live-metrics')
+                .then(r=>r.json())
+                .then(data=>{
+                    if(!data.success){
+                        container.innerHTML = '<div style="color:#ff6b6b; text-align:center;">❌ '+(data.error||'Failed to load metrics')+'</div>';
+                        return;
+                    }
+                    const m = data.metrics;
+                    container.innerHTML = `
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px;">
+                            <div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:6px; text-align:center;">
+                                <h4 style="margin:0; color:#ffd700;">${m.total_orders}</h4><small>Total Orders</small>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:6px; text-align:center;">
+                                <h4 style="margin:0; color:#90ee90;">$${m.total_profit}</h4><small>Total Profit</small>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:6px; text-align:center;">
+                                <h4 style="margin:0; color:#87ceeb;">${m.profit_margin}%</h4><small>Profit Margin</small>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:6px; text-align:center;">
+                                <h4 style="margin:0; color:#ffa500;">$${m.avg_order_value}</h4><small>Avg Order Value</small>
+                            </div>
+                        </div>
+                        <div style="text-align:center; margin-top:15px;">
+                            <button onclick="loadLiveMetrics()" class="btn" style="background:rgba(255,255,255,0.2); color:#fff;">🔄 Refresh Data</button>
+                        </div>`;
+                })
+                .catch(e=>{
+                    console.error(e);
+                    container.innerHTML = '<div style="color:#ff6b6b; text-align:center;">❌ Network error loading metrics</div>';
+                });
+        }
+        function predictPrice() {
+            const productType = document.getElementById('productType').value;
+            const quantity = document.getElementById('quantity').value;
+            const customerSegment = document.getElementById('customerSegment').value;
+            if(!productType || !quantity || !customerSegment){
+                alert('Please fill in all fields'); return;
+            }
+            const resultsDiv = document.getElementById('priceResults');
+            resultsDiv.innerHTML = '<div style="text-align:center; padding:20px;">⏳ Calculating optimal price...</div>';
+            fetch('/api/predict-price', {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({product_type:productType, quantity:parseInt(quantity), customer_segment:customerSegment})
+            })
+            .then(r=>r.json())
+            .then(data=>{
+                if(!data.success){
+                    resultsDiv.innerHTML = '<div style="color:#dc3545; text-align:center;">❌ '+(data.error||'Prediction failed')+'</div>';
+                    return;
+                }
+                const unit = data.unit_price_recommended || (data.predicted_price/quantity);
+                resultsDiv.innerHTML = `
+                    <div style="background:linear-gradient(135deg,#28a745,#20c997); color:#fff; padding:20px; border-radius:10px;">
+                        <h4 style="margin:0 0 12px 0;">🎯 AI / Heuristic Price Suggestion</h4>
+                        <div style="font-size:1.8em; font-weight:bold; margin-bottom:8px;">$${(data.predicted_price).toFixed(2)}</div>
+                        <div style="font-size:0.9em; opacity:0.9; line-height:1.4;">
+                            Unit Recommendation: $${unit.toFixed(2)}<br>
+                            Quantity: ${data.quantity} | Type: ${data.product_type || 'N/A'}<br>
+                            Segment: ${data.customer_segment || 'N/A'} | Confidence: ${data.confidence || 'N/A'}<br>
+                            Est. Profit Margin: ${data.profit_margin || 'N/A'}%
+                        </div>
+                    </div>`;
+            })
+            .catch(e=>{
+                console.error(e);
+                resultsDiv.innerHTML = '<div style="color:#dc3545; text-align:center;">❌ Network error during prediction</div>';
+            });
+        }
+    </script>
+</body>
+</html>

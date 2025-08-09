@@ -1,0 +1,100 @@
+customer id,name,country,region,city 
+NE-001,Kekeli,Ghana,Volta Region,Ho
+NE-002,Zoe,Ghana,Ashanti Region,Ejisu 
+NE-003,Amanda,Ghana,Greater Accra,Madina
+NE-004,Afia A,Ghana,Eastern Region,Akosombo
+NE-005,Ellen,Ghana,Bono Region,Sunyani
+NE-006,May,Ghana,Greater Accra,Ashaiman
+NE-007,Nana Akua Lawyer,Ghana,Greater Accra,Awoshie
+NE-008,Ella A,Ghana,Volta Region,Ho
+NE-009,Bob,Portugal,Lisboa,Rua Manhica
+NE-010,Nana Akua A,Ghana,Greater Accra,Kasoa
+NE-011,Afia A,Ghana,Eastern Region,Akosombo
+NE-012,Irene B,Ghana,Eastern Region,Somanya
+NE-013,Iddris,Ghana,Ashanti Region,Kumasi
+NE-014,Ella B,Ghana,Greater Accra,Korle Bu
+NE-015,Manasseh ,Ghana,Bono Region,Sunyani
+NE-016,Iddris,Ghana,Ashanti Region,Kumasi
+NE-017,Akosua B,Ghana,Ashanti Region,Kumasi
+NE-018,Sandra C,Ghana,Ashanti Region,Kumasi
+NE-019,Blessing,Ghana,Ashanti Region,Effiduase
+NE-020,Florence,Liberia,Margibi County,Firestone
+NE-021,Maadwoa,Ghana,Ashanti Region,Kumasi
+NE-022,Akorfa,Ghana,Greater Accra,Bortianor
+NE-023,Adepa B,Ghana,Greater Accra,Dansoman
+NE-024,Christabel C,Ghana,Greater Accra,Spintex
+NE-025,Nana Kofi B,Ghana,Western Region,Takoradi
+NE-026,Akosua D ,Ghana,Greater Accra,Kwashieman
+NE-027,Augustina B,Ghana,Greater Accra,Amasaman
+NE-028,Munira,Ghana,Oti Region,Kadjebi
+NE-029,Maame Yaa,Ghana,Greater Accra,Kasoa
+NE-030,Freda B,Ghana,Bono Region,Brekum
+NE-031,Jedidah,Ghana,Northern Region,Tamale
+NE-032,Angela,Ghana,Greater Accra,Kasoa
+NE-033,Sarah,Ghana,Greater Accra ,Amasaman
+NE-034,Festus,Ghana,Greater Accra,Ashongman
+NE-035,Prince,Ghana,Western Region,Agona Nkwanta
+NE-036,Sarpong,Ghana,Ashanti Region,Mampong
+NE-037,Young Boy,Ghana,Greater Accra,Dome
+NE-038,Purple,Ghana,Greater Accra,Achimota
+NE-039,Nana Yaa G,Ghana,Eastern Region,Koforidua
+NE-040,Ama Montana,Ghana,Eastern Region,Adeiso
+NE-041,Akosua E,Ghana,Greater Accra,Spintex
+NE-042,Genevieve,Ghana,Ashanti Region,Amanfrom
+NE-045,Stephanie,Ghana,Greater Accra,Spintex
+NE-046,Seyram,Ghana,Greater Accra,Ashongman
+NE-047,Lydia,Ghana,Greater Accra,Ridge
+NE-048,Benetta,Liberia,Margibi County,Firestone
+NE-049,Bridget B,Ghana,Greater Accra,Spintex
+NE-050,Sakina,Ghana,Western North Region,Sefwi Wiawso
+NE-051,Michael C,Ghana,Greater Accra,Abossey Okai
+NE-052,Matilda B,Ghana,Ashanti Region,Obuasi
+NE-053,Raphiat,Ghana,Northern Region,Tamale
+NE-054,Nana Adwoa C,Ghana,Greater Accra,Lapaz
+NE-055,Esinam,Ghana,Greater Accra,Abelemkpe
+NE-056,Jennifer,Ghana,Greater Accra,Madina
+NE-057,Nana Yaw Kankam,Ghana,Greater Accra,Awoshie
+NE-058,Drusilla,Ghana,Greater Accra,Awoshie
+NE-059,Lucy C,Ghana,Bono Region,Sunyani
+NE-060,Kwaku,Ghana,Ashanti Region,Kumasi
+NE-061,Raymond,Ghana,Western Region,Takoradi
+NE-062,Khudrat,Ghana,Greater Accra,Legon
+NE-063,Stephy,Ghana,Greater Accra,Nsawam
+NE-064,Leonara,Ghana,Greater Accra,Kasoa
+NE-065,Tina C,Ghana,Ashanti Region,Kumasi
+NE-066,Sally,Ghana,Greater Accra,Kasoa
+NE-067,Backcase,Ghana,Greater Accra,Lashibi
+NE-068,Kobby C,Ghana,Greater Accra,Pokuase
+NE-069,Enid,Ghana,Greater Accra,Bortianor
+NE-070,Linda D,Ghana,Greater Accra,Nsawam
+NE-071,Samuella,Ghana,Greater Accra,Dansoman
+NE-072,Abubakar,Ghana,Western Region,Elubo
+NE-073,Bridget E,Ghana,Central Region,Ayanfuri
+NE-074,Clement ,Ghana,Eastern Region,Koforidua
+NE-075,Harriet,Ghana,Greater Accra,Kasoa
+NE-076,Emefa B,Ghana,Greater Accra,Madina
+NE-077,Akua,Ghana,Greater Accra,Awoshie
+NE-078,Barikisu,Ghana,Northern Region,Tamale
+NE-079,David B,Ghana,Greater Accra,Lapaz
+NE-080,Samuella B,Ghana,Greater Accra,Kasoa
+NE-081,Angel,Ghana,Greater Accra,Kasoa
+NE-082,Khris,Ghana,Greater Accra,Osu
+NE-083,Gustavo,Ghana,Greater Accra,Awoshie
+NE-084,Senam,Ghana,Greater Accra,Ashongman
+NE-085,Emily,Ghana,Greater Accra,Spintex
+NE-086,Ohemaa B,Ghana,Greater Accra,Kasoa
+NE-087,Burhana,Ghana,Central Region,Cape Coast
+NE-088,Jemimah,Ghana,Greater Accra ,Legon
+NE-089,Natasha,Ghana,Eastern Region,Begoro
+NE-090,Millicent,Ghana,Greater Accra,Ablekuma
+NE-091,Jasmine,Ghana,Greater Accra,Adjiringanor
+NE-092,Dela,Ghana,Greater Accra,Spintex
+NE-093,Andrew A,Ghana,Greater Accra,Awoshie
+NE-094,Sally B,Ghana,Greater Accra,Kasoa
+NE-095,Janet ,Ghana,Greater Accra,Oyarifa 
+NE-096,Darkowaa,Ghana,Greater Accra,Dansoman
+NE-097,Catherine,Ghana,Ashanti Region,Kumasi
+NE-098,Wilson,Ghana,Greater Accra,Burma Camp
+NE-099,Adiepena,Ghana,Greater Accra,McCarthy Hills
+NE-100,Comfort,Ghana,Ashanti Region,Kumasi
+NE-101,El-Joe,Ghana,Greater Accra,Nsawam

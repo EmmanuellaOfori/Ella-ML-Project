@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Group 5 Stock Management System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
+        .header { background: #007bff; color: white; padding: 20px; margin: -20px -20px 20px -20px; }
+        .nav { margin: 20px 0; }
+        .nav a { margin-right: 20px; padding: 10px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; }
+        .nav a:hover { background: #5a6268; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card h3 { margin-top: 0; color: #007bff; }
+        .metric { font-size: 2em; font-weight: bold; color: #28a745; }
+        .recent-activities { margin-top: 30px; }
+        .activity-item { background: white; padding: 10px; margin: 5px 0; border-radius: 5px; border-left: 4px solid #007bff; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Group 5 Stock Management System</h1>
+        <p>Welcome, {{ session.username }}!</p>
+    </div>
+    
+    <div class="nav">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/products">Products</a>
+        <a href="/orders">Orders</a>
+        <a href="/customers">Customers</a>
+        <a href="/reports">Reports</a>
+        <a href="/profitability">Profitability</a>
+        <a href="/forecast">Forecast</a>
+        <a href="/logout">Logout</a>
+    </div>
+    
+    <div class="dashboard-grid">
+        <div class="card">
+            <h3>Total Products</h3>
+            <div class="metric">{{ total_products }}</div>
+        </div>
+        <div class="card">
+            <h3>Total Revenue</h3>
+            <div class="metric">${{ "%.2f"|format(total_revenue) }}</div>
+        </div>
+        <div class="card">
+            <h3>Low Stock Items</h3>
+            <div class="metric">{{ low_stock_count }}</div>
+        </div>
+        <div class="card">
+            <h3>Product Types</h3>
+            <div class="metric">{{ product_types }}</div>
+        </div>
+    </div>
+    
+    <!-- NUELLA ANALYTICS - Simplified Business Intelligence -->
+    {% if live_metrics %}
+    <div class="card" style="margin: 20px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h3 style="color: white;">🎯 Nuella Analytics - Simplified Business Intelligence</h3>
+        
+        <!-- Key Business Metrics -->
+        <div class="dashboard-grid" style="margin-top: 15px;">
+            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
+                <h4 style="margin: 0; color: #ffd700; font-size: 1.8em;">{{ live_metrics.profit_margin }}%</h4>
+                <small style="font-size: 0.9em;">Profit Margin</small>
+            </div>
+            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
+                <h4 style="margin: 0; color: #90ee90; font-size: 1.8em;">${{ "%.0f"|format(live_metrics.avg_profit_per_order) }}</h4>
+                <small style="font-size: 0.9em;">Avg Profit/Order</small>
+            </div>
+            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
+                <h4 style="margin: 0; color: #87ceeb; font-size: 1.8em;">{{ "%.0f"|format(live_metrics.total_orders) }}</h4>
+                <small style="font-size: 0.9em;">Total Orders</small>
+            </div>
+            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
+                <h4 style="margin: 0; color: #ffa500; font-size: 1.8em;">${{ "%.0f"|format(live_metrics.avg_order_value) }}</h4>
+                <small style="font-size: 0.9em;">Avg Order Value</small>
+            </div>
+        </div>
+        
+        <!-- Business Overview -->
+        <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+            <strong style="font-size: 1.1em;">📊 Nuella Perfume Business Overview:</strong><br>
+            <div style="margin-top: 8px; font-size: 0.95em;">
+                � Total Revenue: ${{ "{:,.2f}"|format(live_metrics.total_revenue) }} | 
+                � Total Profit: ${{ "{:,.2f}"|format(live_metrics.total_profit) }} | 
+                � Data Period: {{ live_metrics.data_period }}
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/profitability" style="background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; margin-right: 15px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                � 30-Day Profit Prediction
+            </a>
+            <a href="/forecast" style="background: #17a2b8; color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                � Product Forecast
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="recent-activities">
+        <h3>Recent Activities</h3>
+        {% for activity in recent_activities %}
+        <div class="activity-item">
+            Order #{{ activity.order_id }} - {{ activity.date }} - Customer: {{ activity.customer_id }}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <script>
+        // Auto-refresh live metrics every 30 seconds for Nuella Analytics
+        function refreshLiveMetrics() {
+            fetch('/api/live-metrics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('✅ Nuella Analytics metrics updated:', data.data);
+                        // Reload to show updated metrics
+                        location.reload();
+                    } else {
+                        console.error('❌ Failed to refresh Nuella metrics:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Nuella Analytics refresh error:', error);
+                });
+        }
+        
+        // Auto-refresh every 30 seconds to keep business intelligence current
+        setInterval(() => {
+            fetch('/api/live-metrics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('🔄 Auto-refresh: Nuella Analytics updated');
+                    }
+                })
+                .catch(error => console.log('Auto-refresh failed:', error));
+        }, 30000);
+        
+        // Log system status on load
+        console.log('🎯 Nuella Analytics Dashboard Loaded');
+        console.log('📊 Features: 30-Day Profit Prediction | Product Forecasting | Live Metrics');
+    </script>
+</body>
+</html>
