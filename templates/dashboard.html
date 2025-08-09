@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Group 5 Stock Management System</title>
-    <style>
+    <title>Group 5 Stock Management System</ti        <!-- Business Overview -->
+        <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+            <strong style="font-size: 1.1em;">📊 Nuella Perfume Business Overview:</strong><br>
+            <div style="margin-top: 8px; font-size: 0.95em;">
+                💰 Total Revenue: ${{ "{:,.2f}"|format(live_metrics.total_revenue|default(0)) }} | 
+                💵 Total Profit: ${{ "{:,.2f}"|format(live_metrics.total_profit|default(0)) }} | 
+                📅 Data Period: {{ live_metrics.data_period|default("No data available") }}
+            </div>
+        </div> <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
         .header { background: #007bff; color: white; padding: 20px; margin: -20px -20px 20px -20px; }
         .nav { margin: 20px 0; }
@@ -60,19 +67,19 @@
         <!-- Key Business Metrics -->
         <div class="dashboard-grid" style="margin-top: 15px;">
             <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
-                <h4 style="margin: 0; color: #ffd700; font-size: 1.8em;">{{ live_metrics.profit_margin }}%</h4>
+                <h4 style="margin: 0; color: #ffd700; font-size: 1.8em;">{{ live_metrics.profit_margin|default(0) }}%</h4>
                 <small style="font-size: 0.9em;">Profit Margin</small>
             </div>
             <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
-                <h4 style="margin: 0; color: #90ee90; font-size: 1.8em;">${{ "%.0f"|format(live_metrics.avg_profit_per_order) }}</h4>
+                <h4 style="margin: 0; color: #90ee90; font-size: 1.8em;">${{ "%.0f"|format(live_metrics.avg_profit_per_order|default(0)) }}</h4>
                 <small style="font-size: 0.9em;">Avg Profit/Order</small>
             </div>
             <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
-                <h4 style="margin: 0; color: #87ceeb; font-size: 1.8em;">{{ "%.0f"|format(live_metrics.total_orders) }}</h4>
+                <h4 style="margin: 0; color: #87ceeb; font-size: 1.8em;">{{ "%.0f"|format(live_metrics.total_orders|default(0)) }}</h4>
                 <small style="font-size: 0.9em;">Total Orders</small>
             </div>
             <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
-                <h4 style="margin: 0; color: #ffa500; font-size: 1.8em;">${{ "%.0f"|format(live_metrics.avg_order_value) }}</h4>
+                <h4 style="margin: 0; color: #ffa500; font-size: 1.8em;">${{ "%.0f"|format(live_metrics.avg_order_value|default(0)) }}</h4>
                 <small style="font-size: 0.9em;">Avg Order Value</small>
             </div>
         </div>
