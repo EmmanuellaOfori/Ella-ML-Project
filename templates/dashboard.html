@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Group 5 Stock Management System</ti        <!-- Business Overview -->
+    <title>Group 5 Stock Management System</ti        <!            <div style="margin-top: 8px; font-size: 0.95em;">
+                💰 Total Revenue: ${{ "%.2f"|format(live_metrics.total_revenue|default(0)) }} | 
+                💵 Total Profit: ${{ "%.2f"|format(live_metrics.total_profit|default(0)) }} | 
+                📅 Data Period: {{ live_metrics.data_period|default("No data available") }}
+            </div>siness Overview -->
         <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
             <strong style="font-size: 1.1em;">📊 Nuella Perfume Business Overview:</strong><br>
             <div style="margin-top: 8px; font-size: 0.95em;">
-                💰 Total Revenue: ${{ "{:,.2f}"|format(live_metrics.total_revenue|default(0)) }} | 
-                💵 Total Profit: ${{ "{:,.2f}"|format(live_metrics.total_profit|default(0)) }} | 
+                💰 Total Revenue: ${{ "%.2f"|format(live_metrics.total_revenue|default(0)) }} | 
+                💵 Total Profit: ${{ "%.2f"|format(live_metrics.total_profit|default(0)) }} | 
                 📅 Data Period: {{ live_metrics.data_period|default("No data available") }}
             </div>
         </div> <style>
