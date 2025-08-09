@@ -109,9 +109,9 @@ def dashboard():
         
         # Recent activities from Nuella data
         recent_activities = [
-            {'activity': 'Nuella dataset loaded with 2000 orders', 'timestamp': '2025-06-29'},
-            {'activity': 'Analytics engine updated', 'timestamp': 'Today'},
-            {'activity': 'Profit prediction ready', 'timestamp': 'Today'}
+            {'order_id': '2000', 'date': '2025-06-29', 'customer_id': 'Recent Customer'},
+            {'order_id': '1999', 'date': '2025-06-28', 'customer_id': 'Business Client'},
+            {'order_id': '1998', 'date': '2025-06-27', 'customer_id': 'Retail Customer'}
         ]
         
         return render_template('dashboard.html', 
@@ -121,8 +121,8 @@ def dashboard():
                              low_stock_count=low_stock_count,
                              product_types=product_types,
                              recent_activities=recent_activities,
-                             live_metrics=live_metrics,
-                             ml_insights=ml_insights)
+                             live_metrics=live_metrics or {},
+                             ml_insights=ml_insights or {})
     except Exception as e:
         print(f"Dashboard error: {e}")
         import traceback

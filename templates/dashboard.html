@@ -1,7 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Group 5 Stock Management System</title>
+    <title>Group 5 Stock Management System</titl        <!-- Busi        <!-- Action Buttons -->
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/profitability" style="background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; margin-right: 15px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                💰 30-Day Profit Prediction
+            </a>
+            <a href="/forecast" style="background: #17a2b8; color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                📈 Product Forecast
+            </a>
+        </div>view -->
+        <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+            <strong style="font-size: 1.1em;">📊 Nuella Perfume Business Overview:</strong><br>
+            <div style="margin-top: 8px; font-size: 0.95em;">
+                💰 Total Revenue: ${{ "%.2f"|format(live_metrics.total_revenue|default(0)) }} | 
+                💵 Total Profit: ${{ "%.2f"|format(live_metrics.total_profit|default(0)) }} | 
+                📅 Data Period: {{ live_metrics.data_period|default("No data available") }}
+            </div>
+        </div>meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f8f9fa; }
         .header { background: #007bff; color: white; padding: 20px; margin: -20px -20px 20px -20px; }
@@ -19,7 +36,7 @@
 <body>
     <div class="header">
         <h1>Group 5 Stock Management System</h1>
-        <p>Welcome, {{ session.username }}!</p>
+        <p>Welcome, {{ user }}!</p>
     </div>
     
     <div class="nav">
