@@ -36,19 +36,19 @@
     <div class="dashboard-grid">
         <div class="card">
             <h3>Total Products</h3>
-            <div class="metric">{{ total_products }}</div>
+            <div class="metric">{{ total_products|default(0) }}</div>
         </div>
         <div class="card">
             <h3>Total Revenue</h3>
-            <div class="metric">${{ "%.2f"|format(total_revenue) }}</div>
+            <div class="metric">${{ "%.2f"|format(total_revenue|default(0)) }}</div>
         </div>
         <div class="card">
             <h3>Low Stock Items</h3>
-            <div class="metric">{{ low_stock_count }}</div>
+            <div class="metric">{{ low_stock_count|default(0) }}</div>
         </div>
         <div class="card">
             <h3>Product Types</h3>
-            <div class="metric">{{ product_types }}</div>
+            <div class="metric">{{ product_types|default(0) }}</div>
         </div>
     </div>
     
@@ -60,19 +60,19 @@
         <!-- Key Business Metrics -->
         <div class="dashboard-grid" style="margin-top: 15px;">
             <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
-                <h4 style="margin: 0; color: #ffd700; font-size: 1.8em;">{{ live_metrics.profit_margin }}%</h4>
+                <h4 style="margin: 0; color: #ffd700; font-size: 1.8em;">{{ live_metrics.profit_margin|default(0) }}%</h4>
                 <small style="font-size: 0.9em;">Profit Margin</small>
             </div>
             <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
-                <h4 style="margin: 0; color: #90ee90; font-size: 1.8em;">${{ "%.0f"|format(live_metrics.avg_profit_per_order) }}</h4>
+                <h4 style="margin: 0; color: #90ee90; font-size: 1.8em;">${{ "%.0f"|format(live_metrics.avg_profit_per_order|default(0)) }}</h4>
                 <small style="font-size: 0.9em;">Avg Profit/Order</small>
             </div>
             <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
-                <h4 style="margin: 0; color: #87ceeb; font-size: 1.8em;">{{ "%.0f"|format(live_metrics.total_orders) }}</h4>
+                <h4 style="margin: 0; color: #87ceeb; font-size: 1.8em;">{{ "%.0f"|format(live_metrics.total_orders|default(0)) }}</h4>
                 <small style="font-size: 0.9em;">Total Orders</small>
             </div>
             <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; text-align: center;">
-                <h4 style="margin: 0; color: #ffa500; font-size: 1.8em;">${{ "%.0f"|format(live_metrics.avg_order_value) }}</h4>
+                <h4 style="margin: 0; color: #ffa500; font-size: 1.8em;">${{ "%.0f"|format(live_metrics.avg_order_value|default(0)) }}</h4>
                 <small style="font-size: 0.9em;">Avg Order Value</small>
             </div>
         </div>
@@ -81,19 +81,19 @@
         <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
             <strong style="font-size: 1.1em;">📊 Nuella Perfume Business Overview:</strong><br>
             <div style="margin-top: 8px; font-size: 0.95em;">
-                � Total Revenue: ${{ "{:,.2f}"|format(live_metrics.total_revenue) }} | 
-                � Total Profit: ${{ "{:,.2f}"|format(live_metrics.total_profit) }} | 
-                � Data Period: {{ live_metrics.data_period }}
+                💰 Total Revenue: ${{ "%.2f"|format(live_metrics.total_revenue|default(0)) }} | 
+                💵 Total Profit: ${{ "%.2f"|format(live_metrics.total_profit|default(0)) }} | 
+                📅 Data Period: {{ live_metrics.data_period|default("No data available") }}
             </div>
         </div>
         
         <!-- Action Buttons -->
         <div style="text-align: center; margin-top: 20px;">
             <a href="/profitability" style="background: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; margin-right: 15px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-                � 30-Day Profit Prediction
+                💰 30-Day Profit Prediction
             </a>
             <a href="/forecast" style="background: #17a2b8; color: white; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-                � Product Forecast
+                📈 Product Forecast
             </a>
         </div>
     </div>

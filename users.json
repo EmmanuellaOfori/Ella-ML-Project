@@ -10,7 +10,7 @@
     "password_hash": "scrypt:32768:8:1$0IDkFxHeCnT2Vl7b$ac8e2c46cc8c316e891f58c86a7e4f3455e0759d6ba91c283af3ff60fdc8be383273de98b1db6750f83ed11f2a20f916daf1bb6d4c7aa77518df31001d857d72",
     "email": "admin@ella.com",
     "created_at": "2025-08-08T21:49:26.774224",
-    "last_login": null,
+    "last_login": "2025-08-08T23:29:58.192126",
     "is_active": true
   }
 }

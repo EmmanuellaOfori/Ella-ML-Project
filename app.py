@@ -95,17 +95,17 @@ def dashboard():
         ml_insights = {}
         if live_metrics:
             ml_insights = {
-                'profit_margin': round(live_metrics['profit_margin'], 1),
-                'avg_profit_per_order': round(live_metrics['avg_profit_per_order'], 2),
-                'break_even_orders': max(1, round(5000 / live_metrics['avg_profit_per_order'])) if live_metrics['avg_profit_per_order'] > 0 else 'N/A',
-                'monthly_target_conservative': max(1, round(25000 / live_metrics['avg_profit_per_order'])) if live_metrics['avg_profit_per_order'] > 0 else 'N/A'
+                'profit_margin': round(live_metrics.get('profit_margin', 0), 1),
+                'avg_profit_per_order': round(live_metrics.get('avg_profit_per_order', 0), 2),
+                'break_even_orders': max(1, round(5000 / live_metrics.get('avg_profit_per_order', 1))) if live_metrics.get('avg_profit_per_order', 0) > 0 else 'N/A',
+                'monthly_target_conservative': max(1, round(25000 / live_metrics.get('avg_profit_per_order', 1))) if live_metrics.get('avg_profit_per_order', 0) > 0 else 'N/A'
             }
         
-        # Simplified dashboard data (using Nuella dataset)
+        # Simplified dashboard data (using Nuella dataset) with safe defaults
         total_products = 3  # Three main categories: Perfume Oils, Body Splashes, Boxed Perfumes
-        total_revenue = live_metrics['total_revenue'] if live_metrics else 0
+        total_revenue = live_metrics.get('total_revenue', 0) if live_metrics else 0
         low_stock_count = 0  # Not applicable with new simplified system
-        product_types = ['Perfume Oil', 'Body Splash', 'Boxed Perfume']
+        product_types = 3  # Number of product categories
         
         # Recent activities from Nuella data
         recent_activities = [
@@ -127,11 +127,18 @@ def dashboard():
         print(f"Dashboard error: {e}")
         import traceback
         traceback.print_exc()
+        
+        # Provide safe fallback values
         return render_template('dashboard.html', 
-                             user=session['user_id'],
-                             error="Error loading dashboard data",
+                             user=session.get('user_id', 'User'),
+                             total_products=3,
+                             total_revenue=0,
+                             low_stock_count=0,
+                             product_types=3,
+                             recent_activities=[],
                              live_metrics={},
-                             ml_insights={})
+                             ml_insights={},
+                             error="Error loading dashboard data")
 
 # Data Management Routes
 @app.route('/customers')
@@ -151,6 +158,49 @@ def products():
 def orders():
     orders_data = data_manager.get_orders()
     return render_template('orders.html', orders=orders_data.to_dict('records') if not orders_data.empty else [])
+
+@app.route('/reports')
+@require_login
+def reports():
+    try:
+        # Get comprehensive analytics for reports
+        live_metrics = nuella_analytics.get_dashboard_metrics()
+        
+        # Generate profit prediction for reports
+        profit_prediction = nuella_analytics.predict_30day_profit()
+        
+        # Generate product forecast for reports
+        product_forecast = nuella_analytics.forecast_next_month_products()
+        
+        # Prepare summary data for reports
+        summary_data = {
+            'total_orders': live_metrics.get('total_orders', 0) if live_metrics else 0,
+            'total_revenue': live_metrics.get('total_revenue', 0) if live_metrics else 0,
+            'total_profit': live_metrics.get('total_profit', 0) if live_metrics else 0,
+            'profit_margin': live_metrics.get('profit_margin', 0) if live_metrics else 0,
+            'avg_order_value': live_metrics.get('avg_order_value', 0) if live_metrics else 0,
+            'data_period': live_metrics.get('data_period', 'No data') if live_metrics else 'No data'
+        }
+        
+        return render_template('reports.html', 
+                             user=session['user_id'],
+                             summary_data=summary_data,
+                             profit_prediction=profit_prediction,
+                             product_forecast=product_forecast,
+                             live_metrics=live_metrics or {})
+    except Exception as e:
+        print(f"Reports error: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        # Provide safe fallback
+        return render_template('reports.html', 
+                             user=session.get('user_id', 'User'),
+                             summary_data={},
+                             profit_prediction={},
+                             product_forecast={},
+                             live_metrics={},
+                             error="Error loading reports data")
 
 # Analytics Routes
 @app.route('/profitability')
