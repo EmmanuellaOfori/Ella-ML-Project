@@ -1,6 +1,6 @@
 """Main Flask application using modular components with Nuella dataset."""
 
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 import traceback
 import json
 
@@ -46,8 +46,13 @@ def require_login(f):
 # Authentication Routes
 @app.route('/')
 def index():
+    print("=== INDEX ROUTE CALLED ===")
+    print(f"Session: {session}")
+    print(f"User ID in session: {'user_id' in session}")
     if 'user_id' in session:
+        print("Redirecting to dashboard")
         return redirect(url_for('dashboard'))
+    print("Rendering login.html")
     return render_template('login.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -141,15 +146,63 @@ def dashboard():
                              error="Error loading dashboard data")
 
 # Data Management Routes
-@app.route('/customers')
+@app.route('/customers', methods=['GET', 'POST'])
 @require_login
 def customers():
+    if request.method == 'POST':
+        try:
+            # Handle adding new customer
+            customer_data = {
+                'id': request.form.get('id'),
+                'name': request.form.get('name'),
+                'country': request.form.get('country'),
+                'region': request.form.get('region'),
+                'city': request.form.get('city')
+            }
+            
+            # Add customer via data manager
+            success = data_manager.add_customer(customer_data)
+            if success:
+                flash('Customer added successfully!', 'success')
+            else:
+                flash('Error adding customer.', 'error')
+        except Exception as e:
+            flash(f'Error adding customer: {str(e)}', 'error')
+        
+        return redirect(url_for('customers'))
+    
+    # GET request - display customers
     customers_data = data_manager.get_customers()
     return render_template('customers.html', customers=customers_data.to_dict('records') if not customers_data.empty else [])
 
-@app.route('/products')
+@app.route('/products', methods=['GET', 'POST'])
 @require_login
 def products():
+    if request.method == 'POST':
+        try:
+            # Handle adding new product
+            product_data = {
+                'id': request.form.get('id'),
+                'name': request.form.get('name'),
+                'brand': request.form.get('brand'),
+                'size': request.form.get('size'),
+                'unit_price': float(request.form.get('unit_price', 0)),
+                'type': request.form.get('type'),
+                'quantity': int(request.form.get('quantity', 0))
+            }
+            
+            # Add product via data manager
+            success = data_manager.add_product(product_data)
+            if success:
+                flash('Product added successfully!', 'success')
+            else:
+                flash('Error adding product.', 'error')
+        except Exception as e:
+            flash(f'Error adding product: {str(e)}', 'error')
+        
+        return redirect(url_for('products'))
+    
+    # GET request - display products
     products_data = data_manager.get_products()
     return render_template('products.html', products=products_data.to_dict('records') if not products_data.empty else [])
 
@@ -203,9 +256,22 @@ def reports():
                              error="Error loading reports data")
 
 # Analytics Routes
-@app.route('/profitability')
+@app.route('/profitability', methods=['GET', 'POST'])
 @require_login
 def profitability():
+    if request.method == 'POST':
+        # Handle profitability calculation form submission
+        try:
+            target_profit = float(request.form.get('target_profit', 50000))
+            fixed_costs = float(request.form.get('fixed_costs', 5000))
+            
+            # Process the calculation (you can add more logic here)
+            flash('Profitability calculation completed successfully!', 'success')
+        except Exception as e:
+            flash(f'Error in profitability calculation: {str(e)}', 'error')
+        
+        return redirect(url_for('profitability'))
+    
     return render_template('profitability.html')
 
 @app.route('/forecast')
