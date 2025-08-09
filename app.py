@@ -13,6 +13,22 @@ from nuella_analytics import NuellaAnalytics  # New simplified analytics
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = Config.SECRET_KEY
+# Allow both with/without trailing slashes to reduce 405 from redirects
+try:
+    app.url_map.strict_slashes = False
+except Exception:
+    pass
+
+# Simple version tag
+APP_VERSION = "nuella-1.0.1"
+
+# Basic request logger to help diagnose method issues
+@app.before_request
+def _log_request():
+    try:
+        print(f"[REQ] {request.method} {request.path} user={session.get('user_id')} qs={request.query_string.decode()}")
+    except Exception:
+        pass
 
 # Initialize components
 data_manager = DataManager()  # Kept for legacy compatibility
@@ -46,13 +62,8 @@ def require_login(f):
 # Authentication Routes
 @app.route('/')
 def index():
-    print("=== INDEX ROUTE CALLED ===")
-    print(f"Session: {session}")
-    print(f"User ID in session: {'user_id' in session}")
     if 'user_id' in session:
-        print("Redirecting to dashboard")
         return redirect(url_for('dashboard'))
-    print("Rendering login.html")
     return render_template('login.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -292,20 +303,34 @@ def api_live_metrics():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
-@app.route('/api/predict-30day-profit', methods=['POST'])
+@app.route('/api/predict-30day-profit', methods=['GET','POST'])
 @require_login
 def api_predict_30day_profit():
     """🎯 NEW: Simple 30-day profit prediction based on Nuella dataset"""
+    if request.method == 'GET':
+        return jsonify({
+            'info': 'Use POST to compute 30-day profit prediction',
+            'expected_payload': '{} (no body required)',
+            'endpoint': '/api/predict-30day-profit',
+            'version': APP_VERSION
+        })
     try:
         result = nuella_analytics.predict_30day_profit()
         return jsonify({'success': True, 'data': _to_native(result)})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
-@app.route('/api/forecast-products', methods=['POST'])
+@app.route('/api/forecast-products', methods=['GET','POST'])
 @require_login
 def api_forecast_products():
     """🎯 NEW: Forecast products most likely to be sold next month"""
+    if request.method == 'GET':
+        return jsonify({
+            'info': 'Use POST to get next month product forecast',
+            'expected_payload': '{} (no body required)',
+            'endpoint': '/api/forecast-products',
+            'version': APP_VERSION
+        })
     try:
         forecast_data = nuella_analytics.forecast_next_month_products()
         if 'error' not in forecast_data:
@@ -316,10 +341,17 @@ def api_forecast_products():
         return jsonify({'success': False, 'error': str(e)})
 
 # Legacy API Routes (maintained for backward compatibility)
-@app.route('/api/profitability-prediction', methods=['POST'])
+@app.route('/api/profitability-prediction', methods=['GET','POST'])
 @require_login
 def api_profitability_prediction():
     """Legacy endpoint - redirects to new 30-day profit prediction"""
+    if request.method == 'GET':
+        return jsonify({
+            'info': 'Legacy endpoint. POST to compute or use /api/predict-30day-profit',
+            'endpoint': '/api/profitability-prediction',
+            'replacement': '/api/predict-30day-profit',
+            'version': APP_VERSION
+        })
     try:
         result = nuella_analytics.predict_30day_profit()
         return jsonify({'success': True, 'data': _to_native(result)})
@@ -339,14 +371,22 @@ def api_forecast_analysis():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
-@app.route('/api/price-prediction', methods=['POST'])
+@app.route('/api/price-prediction', methods=['GET','POST'])
 @require_login
 def api_price_prediction():
     """Deprecated endpoint - price prediction not available in simplified system"""
+    if request.method == 'GET':
+        return jsonify({
+            'deprecated': True,
+            'info': 'This feature has been removed. POST also returns this notice.',
+            'replacement': 'Manual pricing analysis',
+            'version': APP_VERSION
+        })
     return jsonify({
-        'success': False, 
+        'success': False,
         'error': 'Price prediction not available in simplified Nuella system',
-        'suggestion': 'Use market research and competitor analysis for pricing'
+        'suggestion': 'Use market research and competitor analysis for pricing',
+        'version': APP_VERSION
     })
 
 @app.route('/api/product-recommendations')
@@ -485,6 +525,20 @@ def api_change_password():
 @app.errorhandler(404)
 def not_found(error):
     return render_template('error.html', error="Page not found"), 404
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    # Provide clearer JSON for API paths, HTML for others
+    if request.path.startswith('/api/'):
+        return jsonify({
+            'success': False,
+            'error': 'Method Not Allowed',
+            'path': request.path,
+            'method': request.method,
+            'hint': 'Check allowed methods or use GET on this endpoint to see usage (if enabled)',
+            'version': APP_VERSION
+        }), 405
+    return render_template('error.html', error=f"Method {request.method} not allowed for {request.path}"), 405
 
 @app.errorhandler(500)
 def internal_error(error):
